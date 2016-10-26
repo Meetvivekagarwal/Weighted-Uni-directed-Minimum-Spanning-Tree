@@ -1,0 +1,127 @@
+
+import java.util.*;
+
+
+public class Solution {
+
+    public static void main(String[] args) {
+        
+        Scanner in = new Scanner(System.in);
+        
+        int queries = in.nextInt();
+       
+        for(int i=0;i<queries;i++)
+            {
+            ArrayList<Node> arrayList = new  ArrayList<Node>();
+            int noOfNodes = in.nextInt();
+          
+            for(int j=1;j<=noOfNodes;j++)
+                {
+                Node newNode = new Node(j);
+                arrayList.add(newNode);
+            }
+            
+            int noofEdges = in.nextInt();
+          
+            
+            for(int j=0;j<noofEdges;j++)
+                {
+                int source = in.nextInt();
+                
+                int destination = in.nextInt();
+                
+                int weight = in.nextInt();
+                
+                Node sourceNode = arrayList.get(source -1);
+                Node destinationNode = arrayList.get(destination -1);
+                sourceNode.addedgeNode(destinationNode,weight);
+                destinationNode.addedgeNode(sourceNode,weight);
+                
+            }
+        
+            int startNode = in.nextInt();
+            Node startingNode = arrayList.get(startNode-1);
+         
+      
+            Queue<Node> qu = new LinkedList<Node>();
+            qu.add(startingNode);
+            
+            int[] minimumDistance = new int[arrayList.size()];
+            int arrayListSize = Integer.MAX_VALUE;
+            for( int j=0;j<minimumDistance.length;j++)
+                {
+                minimumDistance[j] = arrayListSize;
+            }
+            
+            minimumDistance[startNode-1] = 0;
+            
+            while(!qu.isEmpty())
+                {
+                Node selectedNode = qu.poll();
+                if(!selectedNode.visited)
+                    {
+                        selectedNode.visited = true;
+                        Iterator<Map.Entry<Node,Integer>>  iter= selectedNode.getConnectedNodes();
+                        int distance = minimumDistance[selectedNode.value -1];
+                         while(iter.hasNext())
+                            {
+                        	 Map.Entry<Node,Integer> map = iter.next();
+                        	 Node n = map.getKey();
+                                
+                                if(!n.visited) 
+                                     {
+                                        int value = n.value;
+                                        minimumDistance[value -1] = Math.min(minimumDistance[value -1], distance + map.getValue());
+                                        qu.add(n);
+                                        }
+            
+                            }
+                    
+                    
+                }
+                
+            }
+            
+            
+            for( int j=0;j<minimumDistance.length;j++)
+            {
+            	if(minimumDistance[j] == arrayListSize)
+            	{
+            		minimumDistance[j] = -1;
+            	}
+            	
+            if(startNode -1 != j)
+            {
+             System.out.print(minimumDistance[j] + " ");
+            }
+        }
+           System.out.println(); 
+        }
+        
+        in.close();
+    }
+}
+
+ class Node{
+    
+    int value;
+    boolean visited = false;
+    Map<Node,Integer> nodeSet = new HashMap<Node,Integer>();
+    int distance = 0;
+    
+    public Node(int value)
+        {
+        this.value = value;
+    }
+    
+    public void addedgeNode(Node n, Integer weight)
+        {
+        nodeSet.put(n,weight);
+    }
+    
+    public Iterator<Map.Entry<Node,Integer>> getConnectedNodes()
+        {
+         return nodeSet.entrySet().iterator();
+    }
+}
+
